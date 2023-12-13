@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "10843972329",
+    "project_id": "mintlesignuplogin",
+    "storage_bucket": "mintlesignuplogin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10843972329:android:a9cbcf8ab723386ee04678",
+        "android_client_info": {
+          "package_name": "com.example.mintle_login_signup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "10843972329-vt73glr1gam9vkhgb6kfns616iglk0oi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMteavmUnmSmGvDt0A-Qa7vCOiaKqE7o4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "10843972329-vt73glr1gam9vkhgb6kfns616iglk0oi.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "10843972329-h6s1qb4v12ijab309sa9q2idptosdje3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.mintleLoginSignup"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
