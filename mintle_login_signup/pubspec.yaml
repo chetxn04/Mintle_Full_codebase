@@ -38,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_auth: ^4.15.2
   google_sign_in: ^6.2.0
+  flutter_facebook_auth: ^6.0.3
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +67,7 @@ flutter:
     - assets/facebook.png
     - assets/google.png
     - assets/Mintle .png
+    - assets/New_logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

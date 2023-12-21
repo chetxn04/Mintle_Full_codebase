@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "10843972329-ltuer1v80gd2pfs5rpcdu3c9jq58hocc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mintle_login_signup",
+            "certificate_hash": "2b008b9851a27b019e828bc6ebaa5486c8fa0d4e"
+          }
+        },
+        {
           "client_id": "10843972329-vt73glr1gam9vkhgb6kfns616iglk0oi.apps.googleusercontent.com",
           "client_type": 3
         }

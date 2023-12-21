@@ -2,6 +2,7 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mintle_login_signup/main.dart';
 import 'package:mintle_login_signup/signuppage.dart';
@@ -28,7 +29,7 @@ class HomePage extends StatelessWidget {
           centerTitle: true,
           title: Text(
             'Home Page',
-            style: TextStyle(fontFamily: 'DMSans'),
+            style: TextStyle(fontFamily: 'DMSans', color: Colors.white),
           ),
           backgroundColor: Color.fromARGB(255, 0, 0, 0),
         ),
@@ -56,6 +57,7 @@ class HomePage extends StatelessWidget {
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
                 await GoogleSignIn().signOut();
+                await FacebookAuth.instance.logOut();
                 // ignore: use_build_context_synchronously
                 Navigator.push(
                   context,

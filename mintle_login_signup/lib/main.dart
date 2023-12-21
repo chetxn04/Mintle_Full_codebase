@@ -75,6 +75,31 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _signInWithFacebook(BuildContext context) async {
+    try {
+      User? user = await _auth.signInWithFacebook();
+
+      if (user != null) {
+        print("User is successfully signed in");
+
+        // Close the Facebook login page
+        Navigator.pop(context);
+
+        // Navigate to the HomePage
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+        );
+      } else {
+        print("Some error in Facebook code");
+      }
+    } catch (e) {
+      print("Error during Facebook sign-in: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double appBarHeight = 250;
@@ -86,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
           centerTitle: true,
           title: Text(
             'Log In',
-            style: TextStyle(fontFamily: 'DMSans'),
+            style: TextStyle(fontFamily: 'DMSans', color: Colors.white),
           ),
           backgroundColor: Color.fromARGB(255, 0, 0, 0),
         ),
@@ -97,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
               height: appBarHeight,
               child: Center(
                 child: Image.asset(
-                  'assets/Mintle .png',
+                  'assets/New_logo.png',
                   height: 200,
                   width: 200,
                 ),
@@ -119,6 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                     passwordController: _passwordController,
                     signIn: _signIn,
                     signInWithGoogle: _signInWithGoogle,
+                    signInWithFacebook: _signInWithFacebook,
                   ),
                 ),
               ),
@@ -135,14 +161,16 @@ class MyCustomBody extends StatelessWidget {
   final TextEditingController passwordController;
   final Function signIn;
   final Function signInWithGoogle;
+  final Function signInWithFacebook;
 
-  const MyCustomBody(
-      {Key? key,
-      required this.emailController,
-      required this.passwordController,
-      required this.signIn,
-      required this.signInWithGoogle})
-      : super(key: key);
+  const MyCustomBody({
+    Key? key,
+    required this.emailController,
+    required this.passwordController,
+    required this.signIn,
+    required this.signInWithGoogle,
+    required this.signInWithFacebook,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -267,10 +295,7 @@ class MyCustomBody extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             InkWell(
-              onTap: () {
-                // Handle the click event for Facebook
-                print("Facebook clicked!");
-              },
+              onTap: () => signInWithFacebook(context),
               child: Material(
                 color: Colors.transparent,
                 child: CircleAvatar(

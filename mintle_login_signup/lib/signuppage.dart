@@ -71,7 +71,7 @@ class _SignUpPageState extends State<SignUpPage> {
           centerTitle: true,
           title: Text(
             'Create your account',
-            style: TextStyle(fontFamily: 'DMSans'),
+            style: TextStyle(fontFamily: 'DMSans', color: Colors.white),
           ),
           backgroundColor: Color.fromARGB(255, 0, 0, 0),
         ),
@@ -82,7 +82,7 @@ class _SignUpPageState extends State<SignUpPage> {
               height: appBarHeight,
               child: Center(
                 child: Image.asset(
-                  'assets/Mintle .png',
+                  'assets/New_logo.png',
                   height: 200,
                   width: 200,
                 ),
