@@ -92,7 +92,7 @@ class LandingScreen extends StatelessWidget {
                     _buildCircle(false),
                   ],
                 ),
-                SizedBox(height: 20.0),
+                SizedBox(height: 25.0),
                 //
                 OutlinedButton(
                   onPressed: () {
@@ -111,7 +111,7 @@ class LandingScreen extends StatelessWidget {
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ),
-                SizedBox(height: 10.0),
+                SizedBox(height: 20.0),
                 // f) Login Button
                 OutlinedButton(
                   onPressed: () {
@@ -119,7 +119,7 @@ class LandingScreen extends StatelessWidget {
                   },
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: Color(0x3B65F9)),
-                    backgroundColor: Color(0xFF0B173E), // Set the background color to white
+                    backgroundColor: Color(0xFFFFF3DC), // Set the background color to white
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(40),
                     ),
@@ -127,7 +127,7 @@ class LandingScreen extends StatelessWidget {
                   ),
                   child: Text(
                     "Login",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+                    style: TextStyle(color: Color(0xFF7F3DFF), fontSize: 18),
                   ),
                 ),
               ],
