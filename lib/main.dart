@@ -35,8 +35,8 @@ class LandingScreen extends StatelessWidget {
                 //
                 Container(
 
-                  width: 600,
-                  height: 400,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.width*1.1,
                   color: Colors.transparent,
                   child: Image(
                     image: AssetImage('images/img1.png'),
