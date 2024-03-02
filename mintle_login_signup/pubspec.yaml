@@ -39,10 +39,25 @@ dependencies:
   firebase_auth: ^4.15.2
   google_sign_in: ^6.2.0
   flutter_facebook_auth: ^6.0.3
+  cloud_firestore: ^4.13.6
+  smooth_page_indicator: ^1.1.0
+  loop_page_view: ^1.2.5
+  animated_notch_bottom_bar: ^1.0.1
+  curved_navigation_bar: ^1.0.3
+  animated_bottom_navigation_bar: ^1.3.3
+  intl: ^0.19.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.2
+  uuid: ^4.3.3
+  flutter_cache_manager: ^3.3.1
+  fl_chart: ^0.66.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner: ^2.1.4
+  hive_generator: ^2.0.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -68,6 +83,13 @@ flutter:
     - assets/google.png
     - assets/Mintle .png
     - assets/New_logo.png
+    - assets/past_transac.png
+    - assets/analytics.png
+    - assets/history.png
+    - assets/renewal.png
+    - assets/goals.png
+    - assets/reminder.png
+    - images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -84,6 +106,10 @@ flutter:
     - family: DMSans
       fonts:
         - asset: assets/DMSans_18pt-Bold.ttf
+
+    - family: Caveat
+      fonts:
+        - asset: assets/Caveat-VariableFont_wght.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

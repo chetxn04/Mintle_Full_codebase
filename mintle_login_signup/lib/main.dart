@@ -1,347 +1,253 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously, avoid_print
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mintle_login_signup/firebase_auth_services.dart';
-import 'package:mintle_login_signup/home.dart';
-import 'package:mintle_login_signup/main.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mintle_login_signup/firebase_options.dart';
 import 'package:mintle_login_signup/signuppage.dart';
-import 'firebase_options.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mintle_login_signup/transaction_model.dart';
+
+import 'boxes.dart';
+import 'loginpage.dart';
 
 void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(TransactionModelAdapter());
+  transactionsBox = await Hive.openBox<TransactionModel>('transactionBox');
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform); // Initialize Firebase
-
-  runApp(LoginPage());
+  runApp(LandPage());
 }
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
-
+class LandPage extends StatelessWidget {
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: LandingScreen(),
+    );
+  }
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final FirebaseAuthService _auth = FirebaseAuthService();
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+class CarouselItem {
+  final String imagePath;
+  final String textBold;
+  final String normal;
 
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  CarouselItem({
+    required this.imagePath,
+    required this.textBold,
+    required this.normal,
+  });
+}
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  void _signIn(BuildContext context) async {
-    String email = _emailController.text;
-    String password = _passwordController.text;
-
-    User? user = await _auth.signInWithEmailAndPassword(email, password);
-
-    if (user != null) {
-      print("User is successfully Signed In");
-      // ignore: use_build_context_synchronously
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
-      );
-    } else {
-      print("Some error happened");
-    }
-  }
-
-  void _signInWithGoogle(BuildContext context) async {
-    User? user = await _auth.signInWithGoogle();
-
-    if (user != null) {
-      print("User is successfully signed in");
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePage(),
-        ),
-      );
-    } else {
-      print("Some error happened");
-    }
-  }
-
-  void _signInWithFacebook(BuildContext context) async {
-    try {
-      User? user = await _auth.signInWithFacebook();
-
-      if (user != null) {
-        print("User is successfully signed in");
-
-        // Close the Facebook login page
-        Navigator.pop(context);
-
-        // Navigate to the HomePage
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomePage(),
-          ),
-        );
-      } else {
-        print("Some error in Facebook code");
-      }
-    } catch (e) {
-      print("Error during Facebook sign-in: $e");
-    }
-  }
+class LandingScreen extends StatelessWidget {
+  final List<CarouselItem> carouselItems = [
+    CarouselItem(
+      imagePath: 'images/img1.png',
+      textBold: 'Gain total control of your money',
+      normal: "Become your own money manager and make every rupee count",
+    ),
+    CarouselItem(
+      imagePath: 'images/img2.png',
+      textBold: 'Planning ahead',
+      normal: "Setup your budget for each category so you are in control",
+    ),
+    CarouselItem(
+      imagePath: 'images/img3.png',
+      textBold: 'Know where your money goes',
+      normal: "Track your transactions easily with categories",
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    double appBarHeight = 250;
-    return MaterialApp(
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Color.fromARGB(255, 0, 0, 0),
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            'Log In',
-            style: TextStyle(fontFamily: 'DMSans', color: Colors.white),
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.black, Color(0xFF000D39)],
           ),
-          backgroundColor: Color.fromARGB(255, 0, 0, 0),
         ),
-        // body: const MyCustomBody(),
-        body: Column(
-          children: [
-            Container(
-              height: appBarHeight,
-              child: Center(
-                child: Image.asset(
-                  'assets/New_logo.png',
-                  height: 200,
-                  width: 200,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 243, 220, 180),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
+        child: Center(
+          child: Container(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Carousel(carouselItems: carouselItems),
+                SizedBox(height: 25.0),
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUpPage()),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Color(0x3B65F9)),
+                    backgroundColor: Color(0xFF0032E4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    fixedSize: Size(300, 50),
+                  ),
+                  child: Text(
+                    "Sign up",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: MyCustomBody(
-                    emailController: _emailController,
-                    passwordController: _passwordController,
-                    signIn: _signIn,
-                    signInWithGoogle: _signInWithGoogle,
-                    signInWithFacebook: _signInWithFacebook,
+                SizedBox(height: 20.0),
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Color(0x3B65F9)),
+                    backgroundColor: Color(0xFFFFF3DC),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    fixedSize: Size(300, 50),
+                  ),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(color: Color(0xFF7F3DFF), fontSize: 18),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class MyCustomBody extends StatelessWidget {
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final Function signIn;
-  final Function signInWithGoogle;
-  final Function signInWithFacebook;
+class Carousel extends StatefulWidget {
+  final List<CarouselItem> carouselItems;
 
-  const MyCustomBody({
-    Key? key,
-    required this.emailController,
-    required this.passwordController,
-    required this.signIn,
-    required this.signInWithGoogle,
-    required this.signInWithFacebook,
-  }) : super(key: key);
+  Carousel({required this.carouselItems});
+
+  @override
+  _CarouselState createState() => _CarouselState();
+}
+
+class _CarouselState extends State<Carousel> {
+  late PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(
+      initialPage: _currentPage,
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.fromLTRB(30, 40, 30, 15),
-          child: TextField(
-            controller: emailController,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.fromLTRB(30, 20, 20, 20),
-              enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(40),
-                  ),
-                  borderSide: BorderSide(
-                    color: Colors.black,
-                    style: BorderStyle.solid,
-                    width: 1.2,
-                  )),
-              hintText: 'Email',
-              hintStyle: TextStyle(fontFamily: 'DMSans', fontSize: 17),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(30, 0, 30, 15),
-          child: TextField(
-            controller: passwordController,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.fromLTRB(30, 20, 20, 20),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(40),
-                ),
-                borderSide: BorderSide(
-                  color: Colors.black,
-                  style: BorderStyle.solid,
-                  width: 1.2,
-                ),
-              ),
-              hintText: 'Password',
-              hintStyle: TextStyle(fontFamily: 'DMSans', fontSize: 17),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(225, 0, 20, 20),
-          child: Text(
-            'Recover Password',
-            textAlign: TextAlign.right,
-            style: TextStyle(
-                fontFamily: 'DMSans',
-                fontWeight: FontWeight.bold,
-                fontSize: 15),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(30, 20, 20, 30),
-          child: TextButton(
-            onPressed: () => signIn(context),
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.black),
-              foregroundColor: MaterialStateProperty.all(Colors.white),
-              textStyle: MaterialStateProperty.all(
-                TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'DMSans',
-                  fontSize: 17,
-                ),
-              ),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40),
-                ),
-              ),
-              padding: MaterialStateProperty.all(
-                EdgeInsets.symmetric(horizontal: 140.0, vertical: 20.0),
-              ),
-            ),
-            child: Text('Sign In'),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Container(
-                width: 120,
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                child: Divider(
-                  color: Colors.black,
-                  thickness: 1.0,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1.0),
-              child: Text(
-                'Or Log In With',
-                style: TextStyle(
-                  fontFamily: 'DMSans',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                width: 120,
-                padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child: Divider(
-                  color: Colors.black,
-                  thickness: 1.0,
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InkWell(
-              onTap: () => signInWithFacebook(context),
-              child: Material(
-                color: Colors.transparent,
-                child: CircleAvatar(
-                  radius: 20,
-                  foregroundColor: Colors.transparent,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: AssetImage('assets/facebook.png'),
-                ),
-              ),
-            ),
-            SizedBox(width: 30),
-            InkWell(
-              onTap: () => signInWithGoogle(context),
-              child: Material(
-                color: Colors.transparent,
-                child: CircleAvatar(
-                  radius: 20,
-                  foregroundColor: Colors.transparent,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: AssetImage('assets/google.png'),
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 30),
-        Center(
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SignUpPage(),
-                ),
-              );
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          height: MediaQuery.of(context).size.width * 1.6,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: widget.carouselItems.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
             },
-            child: Container(
-              padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-              child: Text(
-                'Don\'t have an account yet !!',
-                style: TextStyle(fontFamily: 'DMSans'),
-              ),
+            itemBuilder: (context, index) {
+              return CarouselItemWidget(widget.carouselItems[index]);
+            },
+          ),
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            widget.carouselItems.length,
+            (index) => buildDot(index),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildDot(int index) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 5),
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: _currentPage == index ? Colors.blue : Colors.grey,
+      ),
+    );
+  }
+}
+
+class CarouselItemWidget extends StatelessWidget {
+  final CarouselItem carouselItem;
+
+  CarouselItemWidget(this.carouselItem);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.width * 1.6,
+      color: Colors.transparent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image(
+            image: AssetImage(carouselItem.imagePath),
+          ),
+          SizedBox(height: 10),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: Column(
+              children: [
+                Text(
+                  carouselItem.textBold,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  carouselItem.normal,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.normal,
+                    letterSpacing: 1,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 }

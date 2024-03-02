@@ -1,12 +1,13 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:mintle_login_signup/firebase_auth_services.dart';
-import 'package:mintle_login_signup/home.dart';
-import 'package:mintle_login_signup/main.dart';
 // import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:mintle_login_signup/details_input_page.dart';
+import 'package:mintle_login_signup/firebase_auth_services.dart';
+
+import 'loginpage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +53,9 @@ class _SignUpPageState extends State<SignUpPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => DetailsInputPage(
+            email: email,
+          ),
         ),
       );
     } else {
