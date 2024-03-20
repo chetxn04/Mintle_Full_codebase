@@ -6,20 +6,30 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:loop_page_view/loop_page_view.dart';
 import 'package:mintle_login_signup/adding_transaction.dart';
+import 'package:mintle_login_signup/better_analytics.dart';
 import 'package:mintle_login_signup/getuserid.dart';
 import 'package:mintle_login_signup/past_transactions_page.dart';
 import 'package:mintle_login_signup/analytics.dart';
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:mintle_login_signup/profile_page.dart';
+import 'package:mintle_login_signup/transaction_model.dart';
 import 'package:mintle_login_signup/userid.dart';
+import 'package:mintle_login_signup/voice_addition.dart';
+import 'boxes.dart';
 import 'financialNews.dart';
 import 'loginpage.dart';
 import 'package:flutter/services.dart';
 
-Future main() async {
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(TransactionModelAdapter());
+  transactionsBox = await Hive.openBox<TransactionModel>('transactionBox');
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(HomePage());
@@ -55,6 +65,27 @@ class _HomePageState extends State<HomePage> {
     _initializeUserID(); // Set the initial selected index
   }
 
+  Future<bool> _onBackPressed() async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Exit App?'),
+            content: Text('Are you sure you want to exit the app?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text('Yes'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   Future<void> _initializeUserID() async {
     String? userID = await getUserID();
     if (userID != null) {
@@ -86,8 +117,15 @@ class _HomePageState extends State<HomePage> {
         "Notice trends in your expenses",
         Color.fromARGB(255, 255, 180, 0),
         'assets/analytics.png',
-        MyApp(),
+        AnalyticsApp(),
         Color.fromARGB(255, 204, 143, 0)),
+    ButtonData(
+        "Voice Update",
+        "Try Our new voice transaction feature ",
+        Color.fromARGB(255, 102, 0, 255),
+        'assets/goals.png',
+        SpeechScreen(),
+        Color.fromARGB(255, 65, 0, 176)),
     ButtonData(
         "Renewals ",
         "Add payments to be done monthly",
@@ -95,13 +133,6 @@ class _HomePageState extends State<HomePage> {
         'assets/renewal.png',
         HomePage(),
         Color.fromARGB(255, 210, 105, 105)),
-    ButtonData(
-        "Voice Update",
-        "Try Our new voice transaction feature ",
-        Color.fromARGB(255, 102, 0, 255),
-        'assets/goals.png',
-        HomePage(),
-        Color.fromARGB(255, 65, 0, 176)),
     ButtonData(
         "Reminders",
         "Set up frequency of reminders",
@@ -121,12 +152,37 @@ class _HomePageState extends State<HomePage> {
     double topPadding = MediaQuery.of(context).size.height * 0.07;
     final iconList = <IconData>[
       Icons.home,
-      Icons.search,
-      Icons.favorite,
+      Icons.swap_horiz_outlined,
+      Icons.analytics,
       Icons.person,
     ];
-    return MaterialApp(
-      home: Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        final value = await showDialog<bool>(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Alert'),
+                content: const Text('Do you want to exit'),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('No'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Exit'),
+                  ),
+                ],
+              );
+            });
+        if (value != null) {
+          return Future.value(value);
+        } else {
+          return Future.value(false);
+        }
+      },
+      child: Scaffold(
         backgroundColor: Color(0xFF000D39),
         floatingActionButton: AnimatedContainer(
           duration: Duration(milliseconds: 300),
@@ -162,7 +218,7 @@ class _HomePageState extends State<HomePage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: AnimatedBottomNavigationBar(
           icons: iconList,
-          activeIndex: _currentIndex,
+          activeIndex: 0,
           gapLocation: GapLocation.center,
           notchSmoothness: NotchSmoothness.defaultEdge,
           leftCornerRadius: 40,
@@ -176,10 +232,42 @@ class _HomePageState extends State<HomePage> {
           notchMargin: 5,
           activeColor: const Color.fromARGB(255, 255, 98, 0),
           onTap: (index) {
-            // Handle tab selection
             setState(() {
               _currentIndex = index;
             });
+
+            switch (index) {
+              case 0:
+                // Navigate to the first page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
+                break;
+              case 1:
+                // Navigate to the second page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AllTransactionsPage()),
+                );
+                break;
+              case 2:
+                // Navigate to the second page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AnalyticsApp()),
+                );
+                break;
+              case 3:
+                // Navigate to the second page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+                break;
+              // Add cases for other indices if needed
+            }
           },
           // Add animation for changing color smoothly
         ),
@@ -280,37 +368,22 @@ class _HomePageState extends State<HomePage> {
                         child: Text(
                           "Spent ",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'DMSans',
-                              fontSize: 18.0),
+                            color: Colors.white,
+                            fontFamily: 'DMSans',
+                            fontSize: 18.0,
+                          ),
                         ),
                       ),
-                      FutureBuilder(
-                        future: getSpent(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const LinearProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return const Text("Error has occurred");
-                          } else {
-                            double budget = snapshot.data?.toDouble() ?? 100;
-                            String budgettext = budget.toString();
-                            return Padding(
-                              padding:
-                                  EdgeInsets.only(left: screenWidth * 0.04),
-                              child: Text(
-                                budgettext,
-                                style: TextStyle(
-                                  fontFamily: 'DMSans',
-                                  color: Colors.white,
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * 0.09,
-                                ),
-                              ),
-                            );
-                          }
-                        },
+                      Padding(
+                        padding: EdgeInsets.only(left: screenWidth * 0.04),
+                        child: Text(
+                          calculateSpent().toString(),
+                          style: TextStyle(
+                            fontFamily: 'DMSans',
+                            color: Colors.white,
+                            fontSize: MediaQuery.of(context).size.width * 0.09,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -512,6 +585,30 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Future<double> getSpent() async {
+    double totalSpent = 0;
+    DateTime now = DateTime.now();
+    DateTime startOfMonth = DateTime(now.year, now.month, 1);
+    DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
+
+    // Open the Hive box
+    final transactionsBox =
+        await Hive.openBox<TransactionModel>('transactionBox');
+
+    // Iterate over transactions and calculate total spending for the current month
+    for (var transaction in transactionsBox.values) {
+      if (transaction.dateTime.isAfter(startOfMonth) &&
+          transaction.dateTime.isBefore(endOfMonth)) {
+        totalSpent += transaction.amount.toDouble();
+      }
+    }
+
+    // Close the Hive box
+    await transactionsBox.close();
+
+    return totalSpent;
+  }
+
   Future<double> getMonthlyBudget() async {
     User? user = FirebaseAuth.instance.currentUser;
 
@@ -535,7 +632,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<double> getSpent() async {
+  Future<double> getfinalSpent() async {
     User? user = FirebaseAuth.instance.currentUser;
 
     try {
@@ -579,5 +676,26 @@ class _HomePageState extends State<HomePage> {
       print("Error retrieving user data: $e");
       return 'User';
     }
+  }
+
+  double calculateSpent() {
+    // Get the current date
+    DateTime now = DateTime.now();
+
+    // Initialize the total spent
+    double totalSpent = 0;
+
+    // Loop through all transactions in the Hive box
+    for (var transaction in transactionsBox.values.cast<TransactionModel>()) {
+      // Check if the transaction is for the current month
+      if (transaction.dateTime.year == now.year &&
+          transaction.dateTime.month == now.month) {
+        // If it is, add the amount to the total spent
+        totalSpent += transaction.amount.toDouble();
+      }
+    }
+
+    // Return the total spent for the current month
+    return totalSpent;
   }
 }

@@ -16,6 +16,7 @@
         android:label="mintle_login_signup"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
